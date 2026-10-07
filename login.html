@@ -1,0 +1,1223 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <script>try{if(localStorage.getItem('talcoitn_session'))document.write('<style>#authGate{display:none!important}</style>');}catch(e){}</script>
+  <script>window._d = window._d || function (s) { return atob(s); };</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>TalcoITN — Talco IT Networks | Portail sécurisé</title>
+
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+    :root {
+      --accent-1: #7c5cff;
+      --accent-2: #ff5fa8;
+      --accent-3: #1de9d4;
+      --accent-4: #ffc247;
+      --grad-primary: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+      --grad-cool: linear-gradient(135deg, #4f7cff, #1de9d4);
+      --bg-deep: #08080d;
+      --bg-1: #0e0e17;
+      --bg-2: #15151f;
+      --glass: rgba(255, 255, 255, 0.06);
+      --glass-strong: rgba(255, 255, 255, 0.10);
+      --stroke: rgba(255, 255, 255, 0.09);
+      --stroke-soft: rgba(255, 255, 255, 0.05);
+      --text-0: #f5f5f9;
+      --text-1: #a6a6b8;
+      --text-2: #67677a;
+      --danger: #ff5470;
+      --success: #2ee6a8;
+      --radius-lg: 28px;
+      --radius-md: 20px;
+      --radius-sm: 14px;
+      --font-d: 'Sora', -apple-system, 'SF Pro Display', sans-serif;
+      --font-b: 'Inter', -apple-system, 'SF Pro Text', sans-serif;
+      --font-m: 'JetBrains Mono', monospace;
+      --ease: cubic-bezier(.22, 1, .36, 1);
+      --ease-spring: cubic-bezier(.34, 1.56, .64, 1);
+    }
+
+    /* ---------- Mode dégradé (option "Dégradés" des paramètres) ---------- */
+    html.grad-mode .blob1,
+    html.grad-mode .blob2,
+    html.grad-mode .blob3 {
+      background: linear-gradient(135deg, var(--accent-1), var(--accent-2), var(--accent-3)) !important;
+    }
+
+    html.grad-mode ::selection {
+      background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+    }
+
+    /* ---------- Fond "Bulle" (option des paramètres) ---------- */
+    #bulleBg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      border: none;
+      pointer-events: none;
+      display: none;
+    }
+
+    #bulleBg.show {
+      display: block;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html,
+    body {
+      height: 100%;
+      background: var(--bg-deep);
+      color: var(--text-0);
+      font-family: var(--font-b);
+      overflow: hidden;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+      font-feature-settings: "ss01", "cv01";
+    }
+
+    h1,
+    h2,
+    h3,
+    .gate-logo,
+    .brand-text,
+    .card .name,
+    .mv-title,
+    .set-title {
+      font-family: var(--font-d);
+    }
+
+    body {
+      letter-spacing: -.01em;
+    }
+
+    button {
+      font-family: inherit;
+      cursor: pointer;
+      background: none;
+      border: none;
+      color: inherit;
+    }
+
+    input {
+      font-family: inherit;
+      color: inherit;
+    }
+
+    ::selection {
+      background: var(--accent-1);
+      color: #fff;
+    }
+
+    ::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, .12);
+      border-radius: 10px;
+    }
+
+    /* ---------- ambient animated background ---------- */
+    #ambient {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(70px);
+      opacity: .48;
+      will-change: transform;
+      animation-fill-mode: both;
+    }
+
+    .blob1 {
+      width: 480px;
+      height: 480px;
+      background: var(--accent-1);
+      top: -160px;
+      left: -120px;
+      animation: float1 14s ease-in-out infinite, hue1 9s linear infinite;
+    }
+
+    .blob2 {
+      width: 420px;
+      height: 420px;
+      background: var(--accent-3);
+      bottom: -140px;
+      right: -100px;
+      animation: float2 16s ease-in-out infinite, hue2 11s linear infinite;
+    }
+
+    .blob3 {
+      width: 340px;
+      height: 340px;
+      background: var(--accent-2);
+      top: 40%;
+      left: 60%;
+      animation: float3 18s ease-in-out infinite, hue1 13s linear infinite reverse;
+    }
+
+    .blob4 {
+      width: 300px;
+      height: 300px;
+      background: var(--accent-4);
+      top: 15%;
+      left: 20%;
+      animation: float2 20s ease-in-out infinite reverse, hue2 10s linear infinite;
+      opacity: .32;
+    }
+
+    @keyframes float1 {
+
+      0%,
+      100% {
+        transform: translate(0, 0) scale(1);
+      }
+
+      50% {
+        transform: translate(100px, 80px) scale(1.22);
+      }
+    }
+
+    @keyframes float2 {
+
+      0%,
+      100% {
+        transform: translate(0, 0) scale(1);
+      }
+
+      50% {
+        transform: translate(-90px, -70px) scale(1.18);
+      }
+    }
+
+    @keyframes float3 {
+
+      0%,
+      100% {
+        transform: translate(0, 0) scale(1);
+      }
+
+      50% {
+        transform: translate(-80px, 100px) scale(.85);
+      }
+    }
+
+    @keyframes hue1 {
+
+      0%,
+      100% {
+        filter: blur(70px) hue-rotate(0deg);
+      }
+
+      50% {
+        filter: blur(70px) hue-rotate(25deg);
+      }
+    }
+
+    @keyframes hue2 {
+
+      0%,
+      100% {
+        filter: blur(70px) hue-rotate(0deg);
+      }
+
+      50% {
+        filter: blur(70px) hue-rotate(-20deg);
+      }
+    }
+
+    .glass {
+      background: var(--glass);
+      /* Perf : 28px -> 14px. .glass est appliqué à énormément d'éléments à
+         l'écran en même temps ; un flou aussi large sur autant de calques
+         est la cause n°1 des ralentissements généraux du site. */
+      backdrop-filter: blur(14px) saturate(160%);
+      -webkit-backdrop-filter: blur(14px) saturate(160%);
+      border: 1px solid var(--stroke);
+    }
+
+    /* ================= AUTH GATE ================= */
+    #authGate {
+      position: fixed;
+      inset: 0;
+      z-index: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      padding: 2rem;
+      transition: opacity .5s var(--ease), transform .5s var(--ease);
+    }
+
+    .gate-logo-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      animation: riseIn .5s var(--ease-spring) both;
+    }
+
+    @keyframes riseIn {
+      from {
+        opacity: 0;
+        transform: translateY(24px) scale(.96);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .gate-icon {
+      width: 72px;
+      height: 72px;
+      border-radius: 22px;
+      background: var(--grad-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 12px 40px -8px rgba(109, 93, 252, .55);
+      margin-bottom: 1.1rem;
+      animation: pulseIcon 3.5s ease-in-out infinite;
+    }
+
+    @keyframes pulseIcon {
+
+      0%,
+      100% {
+        box-shadow: 0 12px 40px -8px rgba(109, 93, 252, .55);
+      }
+
+      50% {
+        box-shadow: 0 16px 52px -6px rgba(255, 111, 165, .55);
+      }
+    }
+
+    .gate-icon svg {
+      width: 34px;
+      height: 34px;
+    }
+
+    .gate-logo {
+      margin: 0;
+      font-family: var(--font-d);
+      font-weight: 800;
+      font-size: 1.9rem;
+      letter-spacing: -.02em;
+    }
+
+    .gate-sub {
+      font-family: var(--font-m);
+      font-size: .72rem;
+      color: var(--text-2);
+      letter-spacing: .16em;
+      margin-top: .3rem;
+      text-transform: uppercase;
+    }
+
+    .gate-card {
+      margin-top: 2.2rem;
+      width: 360px;
+      max-width: 90vw;
+      border-radius: var(--radius-lg);
+      padding: 1.7rem;
+      animation: riseIn .5s var(--ease-spring) both;
+    }
+
+    .gate-tabs {
+      display: flex;
+      background: rgba(255, 255, 255, .05);
+      border-radius: 999px;
+      padding: 4px;
+      margin-bottom: 1.3rem;
+      position: relative;
+      touch-action: none;
+      -webkit-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+      -webkit-touch-callout: none;
+    }
+
+    .gate-tab {
+      flex: 1;
+      padding: .55rem 0;
+      font-size: .8rem;
+      font-weight: 600;
+      color: var(--text-1);
+      border-radius: 999px;
+      position: relative;
+      z-index: 2;
+      transition: color .3s var(--ease);
+    }
+
+    .gate-tab.active {
+      color: #0a0a10;
+    }
+
+    .gate-tab-bg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      border-radius: 999px;
+      background: linear-gradient(135deg, rgba(255, 255, 255, .3), rgba(255, 255, 255, .05)), var(--grad-primary);
+      backdrop-filter: blur(8px) saturate(180%);
+      -webkit-backdrop-filter: blur(8px) saturate(180%);
+      box-shadow: 0 6px 16px -6px rgba(109, 93, 252, .55), inset 0 1px 1px rgba(255, 255, 255, .4);
+      border: 1px solid rgba(255, 255, 255, .25);
+      transition: transform .5s var(--ease-spring), width .35s var(--ease-spring), height .35s var(--ease-spring);
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .gate-tab-bg.dragging {
+      transition: transform .06s linear, width .18s var(--ease-spring), height .18s var(--ease-spring);
+    }
+
+    .gate-field {
+      display: block;
+      width: 100%;
+      background: rgba(0, 0, 0, .35);
+      border: 1.5px solid var(--stroke);
+      color: var(--text-0);
+      font-size: .88rem;
+      padding: .85rem 1rem;
+      border-radius: var(--radius-sm);
+      margin-bottom: .7rem;
+      transition: transform .25s var(--ease), opacity .25s var(--ease), background-color .25s var(--ease), border-color .25s var(--ease), box-shadow .25s var(--ease), color .25s var(--ease);
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, .4);
+    }
+
+    .gate-field::placeholder {
+      color: var(--text-2);
+    }
+
+    .gate-field:focus {
+      outline: none;
+      border-color: var(--accent-1);
+      background: rgba(109, 93, 252, .1);
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, .4), 0 0 0 4px rgba(109, 93, 252, .15);
+    }
+
+    .gate-btn {
+      width: 100%;
+      background: var(--grad-primary);
+      background-size: 200% auto;
+      color: #fff;
+      font-weight: 700;
+      font-size: .88rem;
+      padding: .85rem;
+      border-radius: var(--radius-sm);
+      letter-spacing: .01em;
+      transition: transform .18s var(--ease-spring), box-shadow .3s, background-position .5s var(--ease);
+      box-shadow: 0 10px 26px -10px rgba(109, 93, 252, .6);
+    }
+
+    .gate-btn:hover {
+      background-position: 100% center;
+      box-shadow: 0 14px 34px -10px rgba(255, 111, 165, .6);
+    }
+
+    .gate-btn:active {
+      transform: scale(.94);
+    }
+
+    .gate-btn.ghost {
+      background: rgba(255, 255, 255, .05);
+      border: 1px solid var(--stroke);
+      box-shadow: none;
+      color: var(--text-1);
+      margin-top: .7rem;
+    }
+
+    .gate-btn.ghost:active {
+      transform: scale(.965);
+      background: rgba(255, 255, 255, .09);
+    }
+
+    .gate-btn.ghost:disabled {
+      opacity: .45;
+      cursor: not-allowed;
+    }
+
+    .gate-btn.ghost:disabled:active {
+      transform: none;
+    }
+
+    .gate-error {
+      font-size: .74rem;
+      color: var(--danger);
+      min-height: 1.2em;
+      margin-bottom: .5rem;
+      font-weight: 600;
+    }
+
+    /* ===== Toggle "œil" mot de passe — style iOS 26 ===== */
+    .pw-wrap {
+      position: relative;
+    }
+
+    .pw-wrap input {
+      padding-right: 42px !important;
+    }
+
+    .pw-eye {
+      position: absolute;
+      right: 5px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 30px;
+      height: 30px;
+      border: none;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, .06);
+      backdrop-filter: blur(10px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      padding: 0;
+      color: var(--text-2);
+      transition: background .25s cubic-bezier(.22, .82, .24, 1), transform .25s cubic-bezier(.22, .82, .24, 1), color .25s;
+    }
+
+    .pw-eye:hover {
+      background: rgba(255, 255, 255, .12);
+    }
+
+    .pw-eye:active {
+      transform: translateY(-50%) scale(.88);
+    }
+
+    .pw-eye svg {
+      width: 16px;
+      height: 16px;
+      transition: transform .3s cubic-bezier(.34, 1.56, .64, 1), opacity .2s;
+    }
+
+    .pw-eye .eye-open {
+      position: absolute;
+    }
+
+    .pw-eye .eye-closed {
+      position: absolute;
+      opacity: 0;
+      transform: scale(.5) rotate(-15deg);
+    }
+
+    .pw-eye.is-visible .eye-open {
+      opacity: 0;
+      transform: scale(.5) rotate(15deg);
+    }
+
+    .pw-eye.is-visible .eye-closed {
+      opacity: 1;
+      transform: scale(1) rotate(0);
+    }
+
+    .pw-eye.is-visible {
+      background: rgba(109, 93, 252, .2);
+      color: var(--accent-1);
+    }
+
+    .gate-guest-note {
+      font-size: .68rem;
+      color: var(--text-2);
+      margin-top: 1rem;
+      text-align: center;
+      line-height: 1.6;
+    }
+
+    .gate-fw-note {
+      font-family: var(--font-m);
+      font-size: .6rem;
+      color: var(--text-2);
+      margin-top: 1.6rem;
+      text-align: center;
+      opacity: .6;
+      max-width: 340px;
+      line-height: 1.6;
+    }
+
+    #authProgressOverlay {
+      position: fixed;
+      inset: 0;
+      z-index: 120;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(8, 8, 14, .72);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    #authProgressOverlay.show {
+      display: flex;
+    }
+
+    .auth-progress-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      padding: 2rem 2.4rem;
+    }
+
+    .auth-progress-spinner {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: 3px solid rgba(255, 255, 255, .15);
+      border-top-color: #fff;
+      animation: authSpin .8s linear infinite;
+    }
+
+    @keyframes authSpin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .auth-progress-label {
+      font-family: var(--font-b);
+      font-size: .82rem;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: .01em;
+    }
+
+    .auth-progress-track {
+      width: 220px;
+      height: 6px;
+      border-radius: 99px;
+      background: rgba(255, 255, 255, .12);
+      overflow: hidden;
+    }
+
+    .auth-progress-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: 99px;
+      background: linear-gradient(90deg, #4f7cff, #22d3c5);
+      transition: width .25s linear;
+    }
+  </style>
+</head>
+
+<body>
+
+  <style>
+    #itnModalOverlay {
+      position: fixed;
+      inset: 0;
+      z-index: 99999;
+      background: rgba(5, 3, 10, 0.55);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    #itnModalOverlay.show {
+      display: flex;
+    }
+
+    #itnModalBox {
+      width: 100%;
+      max-width: 340px;
+      background: linear-gradient(160deg, rgba(24, 20, 38, 0.98), rgba(14, 12, 22, 0.98));
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 22px;
+      padding: 22px 20px 16px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      transform: scale(.92);
+      opacity: 0;
+      transition: transform .18s ease, opacity .18s ease;
+      font-family: 'Sora', 'Inter', sans-serif;
+    }
+
+    #itnModalOverlay.show #itnModalBox {
+      transform: scale(1);
+      opacity: 1;
+    }
+
+    #itnModalMsg {
+      color: #f1f0f7;
+      font-size: .92rem;
+      line-height: 1.45;
+      white-space: pre-line;
+      margin-bottom: 18px;
+      text-align: center;
+    }
+
+    #itnModalBtns {
+      display: flex;
+      gap: 10px;
+    }
+
+    #itnModalBtns button {
+      flex: 1;
+      border: none;
+      cursor: pointer;
+      padding: 11px 0;
+      border-radius: 14px;
+      font-size: .86rem;
+      font-weight: 600;
+      font-family: inherit;
+      transition: filter .15s, transform .1s;
+    }
+
+    #itnModalBtns button:active {
+      transform: scale(.96);
+    }
+
+    #itnModalCancel {
+      background: rgba(255, 255, 255, 0.08);
+      color: #cfcfe0;
+    }
+
+    #itnModalCancel:hover {
+      filter: brightness(1.3);
+    }
+
+    #itnModalOk {
+      background: linear-gradient(135deg, #7c5cff, #ff5fa8);
+      color: #fff;
+    }
+
+    #itnModalOk:hover {
+      filter: brightness(1.1);
+    }
+  </style>
+  <div id="itnModalOverlay">
+    <div id="itnModalBox">
+      <div id="itnModalMsg"></div>
+      <div id="itnModalBtns">
+        <button id="itnModalCancel" type="button">Annuler</button>
+        <button id="itnModalOk" type="button">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="adminContactOverlay"
+    style="display:none;position:fixed;inset:0;z-index:9999;background:#0a0a10;">
+    <div style="position:absolute;inset:0;overflow-y:auto;-webkit-overflow-scrolling:touch;">
+      <div style="max-width:480px;margin:0 auto;min-height:100%;padding:1.5rem 1.3rem calc(1.5rem + env(safe-area-inset-bottom));display:flex;flex-direction:column;color:#fff;font-family:inherit;box-sizing:border-box;">
+        <button id="adminContactCloseBtn" type="button"
+          style="align-self:flex-start;background:none;border:none;color:rgba(255,255,255,.6);font-size:.9rem;cursor:pointer;padding:.5rem 0;margin-bottom:.5rem;">← Retour</button>
+        <h2 style="margin:.5rem 0 .4rem;font-size:1.3rem;">📧 Contacter l'administrateur</h2>
+        <p style="opacity:.75;font-size:.85rem;line-height:1.55;margin:0 0 1.4rem;">Renseigne les infos ci-dessous,
+          puis clique sur « Envoyer ». Ta messagerie s'ouvrira avec un mail déjà rempli à destination de
+          <b>talcoitn@gmail.com</b>.</p>
+        <form id="adminContactForm" style="display:flex;flex-direction:column;gap:.9rem;flex:1;">
+          <input class="gate-field" type="text" id="adminContactName" placeholder="Pseudo souhaité" autocomplete="off">
+          <textarea id="adminContactReason" class="gate-field" placeholder="Motif de la demande" rows="6"
+            style="resize:vertical;min-height:120px;font-family:inherit;"></textarea>
+          <button class="gate-btn" type="submit" id="adminContactSubmitBtn">Envoyer</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const ADMIN_EMAIL = 'talcoitn@gmail.com';
+      const ADMIN_SUBJECT = "Demande de code d'accès TalcoITN";
+      window.openAdminContactModal = function () {
+        document.getElementById('adminContactOverlay').style.display = 'block';
+      };
+      function closeAdminContactModal() { document.getElementById('adminContactOverlay').style.display = 'none'; }
+      document.getElementById('adminContactCloseBtn').addEventListener('click', closeAdminContactModal);
+      document.getElementById('adminContactForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const pseudo = document.getElementById('adminContactName').value.trim();
+        const motif = document.getElementById('adminContactReason').value.trim();
+        const body = "Bonjour,\n\nJe souhaite obtenir un code d'accès (ou la création d'un compte) pour utiliser le portail TalcoITN.\n\nMon pseudo souhaité : " + pseudo + "\nMotif de la demande : " + motif + "\n\nMerci d'avance,";
+        const mailtoUrl = 'mailto:' + ADMIN_EMAIL
+          + '?subject=' + encodeURIComponent(ADMIN_SUBJECT)
+          + '&body=' + encodeURIComponent(body);
+        // Bascule vers le client mail une fois le formulaire rempli.
+        window.location.href = mailtoUrl;
+      });
+    })();
+  </script>
+  <script>
+    // Modales maison (carré arrondi) — remplacent confirm()/alert() natifs
+    // pour ne jamais afficher le domaine d'hébergement dans la boîte de dialogue.
+    function itnModal(message, { cancelable = true } = {}) {
+      return new Promise((resolve) => {
+        const overlay = document.getElementById('itnModalOverlay');
+        const box = document.getElementById('itnModalBox');
+        document.getElementById('itnModalMsg').textContent = message;
+        const cancelBtn = document.getElementById('itnModalCancel');
+        const okBtn = document.getElementById('itnModalOk');
+        cancelBtn.style.display = cancelable ? '' : 'none';
+        overlay.classList.add('show');
+        function cleanup(result) {
+          overlay.classList.remove('show');
+          okBtn.removeEventListener('click', onOk);
+          cancelBtn.removeEventListener('click', onCancel);
+          overlay.removeEventListener('click', onOverlay);
+          resolve(result);
+        }
+        function onOk() { cleanup(true); }
+        function onCancel() { cleanup(false); }
+        function onOverlay(e) { if (e.target === overlay && cancelable) cleanup(false); }
+        okBtn.addEventListener('click', onOk);
+        cancelBtn.addEventListener('click', onCancel);
+        overlay.addEventListener('click', onOverlay);
+      });
+    }
+    function itnConfirm(message) { return itnModal(message, { cancelable: true }); }
+    function itnAlert(message) { return itnModal(message, { cancelable: false }); }
+  </script>
+
+  <div id="ambient">
+    <div class="blob blob1"></div>
+    <div class="blob blob2"></div>
+    <div class="blob blob3"></div>
+    <div class="blob blob4"></div>
+  </div>
+
+  <!-- ============ AUTH GATE ============ -->
+  <div id="authGate">
+    <div class="gate-logo-wrap">
+      <div class="gate-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round">
+          <circle cx="12" cy="12" r="3" />
+          <circle cx="12" cy="12" r="9" stroke-dasharray="4 3" />
+        </svg>
+      </div>
+      <h1 class="gate-logo">TalcoITN</h1>
+      <div class="gate-sub">Talco IT Networks (ITN)</div>
+      <div class="gate-sub" style="margin-top:.2rem;opacity:.6;">Version 179.5</div>
+    </div>
+
+    <div class="gate-card glass">
+      <div class="gate-tabs">
+        <div class="gate-tab-bg" id="gateTabBg"></div>
+        <button class="gate-tab active" data-tab="login">Connexion</button>
+        <button class="gate-tab" data-tab="signup">Créer un compte</button>
+      </div>
+
+      <div class="gate-error" id="gateError"></div>
+
+      <div id="tab-login">
+        <input class="gate-field" type="text" id="loginEmail" placeholder="Nom d'utilisateur" autocomplete="username">
+        <div class="pw-wrap">
+          <input class="gate-field" type="password" id="loginPass" placeholder="Mot de passe"
+            autocomplete="current-password">
+          <button type="button" class="pw-eye" data-target="loginPass">
+            <svg class="eye-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z" />
+              <circle cx="12" cy="12" r="3" />
+            </svg>
+            <svg class="eye-closed" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path
+                d="M17.94 17.94A10.94 10.94 0 0 1 12 19c-7 0-11-7-11-7a18.5 18.5 0 0 1 4.22-5.06M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 7 11 7a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+              <line x1="1" y1="1" x2="23" y2="23" />
+            </svg>
+          </button>
+        </div>
+        <button class="gate-btn" id="btnLogin">Se connecter</button>
+      </div>
+
+      <div id="tab-signup" style="display:none;">
+        <input class="gate-field" type="text" id="signupName" placeholder="Nom d'utilisateur" autocomplete="username">
+        <div class="pw-wrap">
+          <input class="gate-field" type="password" id="signupPass" placeholder="Mot de passe (6 caractères min.)"
+            autocomplete="new-password">
+          <button type="button" class="pw-eye" data-target="signupPass">
+            <svg class="eye-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z" />
+              <circle cx="12" cy="12" r="3" />
+            </svg>
+            <svg class="eye-closed" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path
+                d="M17.94 17.94A10.94 10.94 0 0 1 12 19c-7 0-11-7-11-7a18.5 18.5 0 0 1 4.22-5.06M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 7 11 7a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+              <line x1="1" y1="1" x2="23" y2="23" />
+            </svg>
+          </button>
+        </div>
+        <input class="gate-field" type="text" id="signupAdminCode" placeholder="Code admin (AAAA000000)"
+          autocomplete="off" style="text-transform:uppercase;">
+        <button class="gate-btn" id="btnSignup">Créer mon compte</button>
+        <button type="button" class="gate-btn ghost" id="btnContactAdmin"
+          style="margin-top:.6rem;">Contactez l'administrateur</button>
+      </div>
+
+      <button class="gate-btn ghost" id="btnGuest">Continuer en invité</button>
+      <div class="gate-guest-note">🔒 Mode invité en accès restreint : navigation uniquement, un compte TalcoITN
+        est requis pour exploiter chaque module.</div>
+    </div>
+
+    <div class="gate-fw-note" id="fwNote">Connexion via Firebase Authentication (par pseudo). Renseignez votre
+      <code>firebaseConfig</code> dans le script pour l'activer — sinon le site fonctionne en simulation locale.
+    </div>
+    <p
+      style="font-family:var(--font-b);font-size:.68rem;color:var(--text-2);margin-top:1rem;text-align:center;max-width:360px;line-height:1.7;opacity:.75;">
+      TalcoITN (Talco IT Networks, ITN) est le portail sécurisé regroupant Exchange, Cloud, Intelligence, Music,
+      Scientis, Enseignement et Pratics en un seul accès.
+    </p>
+
+    <div id="authProgressOverlay">
+      <div class="auth-progress-box">
+        <div class="auth-progress-spinner"></div>
+        <div class="auth-progress-label" id="authProgressLabel">Connexion serveur</div>
+        <div class="auth-progress-track">
+          <div class="auth-progress-fill" id="authProgressFill"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBHPIvhPl_9WqergwOuQMy2GwTFOmpEa8Y",
+      authDomain: "talcoexchange.firebaseapp.com",
+      projectId: "talcoexchange",
+      storageBucket: "talcoexchange.appspot.com",
+      messagingSenderId: "1031865188092",
+      appId: "1:1031865188092:web:8292700b9aa8a73ea76179",
+      measurementId: "G-R5HVD922GM"
+    };
+    let fbReady = false;
+    let db = null;
+    try { if (firebaseConfig.apiKey !== "VOTRE_API_KEY") { firebase.initializeApp(firebaseConfig); fbReady = true; db = firebase.firestore(); } } catch (e) { console.warn("Firebase non configuré:", e); }
+
+    const Store = {
+      get(k, f) { try { const v = localStorage.getItem(k); return v === null ? f : JSON.parse(v); } catch (e) { return f; } },
+      set(k, v) { localStorage.setItem(k, JSON.stringify(v)); }
+    };
+
+    // Affiche clairement dans l'écran de connexion si Firebase est actif ou non
+    window.addEventListener('DOMContentLoaded', () => {
+      const note = document.getElementById('fwNote');
+      if (note) {
+        note.innerHTML = fbReady
+          ? "🟢 Firebase Authentication actif — les comptes sont réels et partagés entre navigateurs."
+          : "🟠 Firebase NON configuré — mode simulation locale actif. Les comptes créés ne sont valables que dans <b>ce navigateur</b>. Renseignez <code>firebaseConfig</code> dans le script pour activer de vrais comptes partagés.";
+      }
+      updateGuestButtonState();
+    });
+
+    /* ---------- Auth gate ---------- */
+    const gate = document.getElementById('authGate');
+    const appEl = document.getElementById('app');
+    const gateError = document.getElementById('gateError');
+
+    /* Toggle "œil" mot de passe — délégation, marche pour tout .pw-eye présent (statique ou ajouté dynamiquement) */
+    document.addEventListener('click', (e) => {
+      const btn = e.target.closest('.pw-eye');
+      if (!btn) return;
+      const targetId = btn.dataset.target;
+      const input = targetId ? document.getElementById(targetId) : btn.parentElement.querySelector('input');
+      if (!input) return;
+      const show = input.type === 'password';
+      input.type = show ? 'text' : 'password';
+      btn.classList.toggle('is-visible', show);
+    });
+    let currentUser = null;
+
+    const GUEST_COOLDOWN_MS = 24 * 60 * 60 * 1000; // 1 fois par 24h
+
+    function updateGuestButtonState() {
+      const btn = document.getElementById('btnGuest');
+      if (!btn) return;
+      btn.disabled = false;
+      btn.style.opacity = '';
+      btn.style.cursor = 'pointer';
+      btn.textContent = 'Continuer en invité';
+    }
+
+    function positionGateTabBg() {
+      const active = document.querySelector('.gate-tab.active');
+      const bg = document.getElementById('gateTabBg');
+      if (!active || !bg) return;
+      bg.style.width = active.offsetWidth + 'px';
+      bg.style.height = active.offsetHeight + 'px';
+      bg.style.transform = `translate(${active.offsetLeft}px, ${active.offsetTop}px)`;
+    }
+
+    document.querySelectorAll('.gate-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.gate-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        gateError.textContent = '';
+        const isSignup = tab.dataset.tab === 'signup';
+        positionGateTabBg();
+        document.getElementById('tab-login').style.display = isSignup ? 'none' : 'block';
+        document.getElementById('tab-signup').style.display = isSignup ? 'block' : 'none';
+      });
+    });
+    setupLiquidMenu(document.querySelector('.gate-tabs'), document.getElementById('gateTabBg'), '.gate-tab', item => item.click());
+    requestAnimationFrame(positionGateTabBg);
+    window.addEventListener('resize', positionGateTabBg);
+
+    // Convertit un pseudo en fausse adresse @talcoexchange.app en coulisses.
+    // IMPORTANT : copié À L'IDENTIQUE de la fonction uToEmail de TalcoExchange
+    // (même regex, même casse) — TalcoITN et TalcoExchange partagent le même
+    // projet Firebase, donc un même pseudo doit toujours produire le même
+    // e-mail interne des deux côtés pour pointer vers le même compte.
+    const uToEmail = u => u.trim().toLowerCase().replace(/[^a-z0-9_.]/g, '') + '@talcoexchange.app';
+
+    // Traduction des codes d'erreur Firebase les plus fréquents
+    function fbErrorMessage(err) {
+      const map = {
+        'auth/user-not-found': "Aucun compte n'existe avec ce pseudo — vérifiez l'orthographe ou créez un compte.",
+        'auth/wrong-password': "Mot de passe incorrect.",
+        'auth/invalid-credential': "Pseudo ou mot de passe incorrect.",
+        'auth/invalid-email': "Pseudo invalide (utilisez uniquement lettres, chiffres, points et underscores).",
+        'auth/email-already-in-use': "Ce pseudo est déjà pris — connectez-vous plutôt.",
+        'auth/weak-password': "Mot de passe trop faible (6 caractères minimum).",
+        'auth/operation-not-allowed': "La connexion par e-mail/mot de passe n'est pas activée dans la console Firebase (Authentication → Sign-in method → Email/Password → Activer).",
+        'auth/network-request-failed': "Problème réseau — vérifiez votre connexion.",
+        'auth/too-many-requests': "Trop de tentatives — réessayez dans quelques minutes.",
+      };
+      return map[err.code] || err.message;
+    }
+
+    function doLogin() {
+      const pseudo = document.getElementById('loginEmail').value.trim();
+      const pass = document.getElementById('loginPass').value;
+      if (!pseudo || !pass) { gateError.textContent = "Renseignez pseudo et mot de passe."; return; }
+      const email = uToEmail(pseudo);
+      if (fbReady) {
+        firebase.auth().signInWithEmailAndPassword(email, pass)
+          .then(cred => runAuthProgress(
+            [{ label: 'Connexion serveur', duration: 1000 }],
+            () => enterApp({ name: pseudo, email: cred.user.email, uid: cred.user.uid, guest: false, pass })
+          ))
+          .catch(err => { gateError.textContent = fbErrorMessage(err); console.warn('Firebase login error:', err.code, err.message); });
+      } else {
+        const users = Store.get('talcoitn_users', {});
+        if (users[email] && users[email].pass === pass) {
+          runAuthProgress([{ label: 'Connexion serveur', duration: 1000 }], () => enterApp({ name: users[email].name, email, guest: false, pass }));
+        }
+        else gateError.textContent = "Identifiants invalides — ce site tourne en mode simulation locale (aucune configuration Firebase valide détectée), le compte doit avoir été créé dans ce même navigateur.";
+      }
+    }
+    document.getElementById('btnLogin').addEventListener('click', doLogin);
+    document.getElementById('loginEmail').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); doLogin(); } });
+    document.getElementById('loginPass').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); doLogin(); } });
+
+    document.getElementById('btnSignup').addEventListener('click', async () => {
+      const pseudo = document.getElementById('signupName').value.trim();
+      const pass = document.getElementById('signupPass').value;
+      const adminCode = document.getElementById('signupAdminCode').value;
+      if (!pseudo || pass.length < 6) { gateError.textContent = "Pseudo et mot de passe (6 car. min.) requis."; return; }
+      const okCode = await verifyDailyAdminCode(adminCode);
+      if (!okCode) { gateError.textContent = "Code admin invalide ou expiré. Demande le code du jour à Anton ou Talco."; return; }
+      const email = uToEmail(pseudo);
+      const signupSteps = [
+        { label: 'Création du compte', duration: 1000 },
+        { label: 'Chargement', duration: 1000 },
+        { label: 'Connexion serveur', duration: 1000 }
+      ];
+      if (fbReady) {
+        firebase.auth().createUserWithEmailAndPassword(email, pass)
+          .then(cred => {
+            return cred.user.updateProfile({ displayName: pseudo }).then(() =>
+              runAuthProgress(signupSteps, () => enterApp({ name: pseudo, email: cred.user.email, uid: cred.user.uid, guest: false, pass }))
+            );
+          })
+          .catch(err => { gateError.textContent = fbErrorMessage(err); console.warn('Firebase signup error:', err.code, err.message); });
+      } else {
+        const users = Store.get('talcoitn_users', {});
+        if (users[email]) { gateError.textContent = "Ce pseudo est déjà pris."; return; }
+        users[email] = { name: pseudo, pass }; Store.set('talcoitn_users', users);
+        runAuthProgress(signupSteps, () => enterApp({ name: pseudo, email, guest: false, pass }));
+      }
+    });
+
+    // Diagnostic visible dans la console au chargement : confirme si Firebase est réellement actif
+    console.log(fbReady
+      ? "[TalcoITN] Firebase actif — les comptes sont gérés par Firebase Authentication."
+      : "[TalcoITN] Firebase NON configuré (firebaseConfig.apiKey toujours à 'VOTRE_API_KEY') — les comptes créés sont stockés en localStorage, propres à ce navigateur uniquement. C'est probablement pourquoi un compte créé ailleurs, ou avant configuration de Firebase, n'est pas reconnu."
+    );
+
+    // Liste des comptes administrateurs autorisés à modifier le code des modules.
+    // Comme la connexion se fait maintenant par pseudo (converti en interne en
+    // pseudo@talcoexchange.app via uToEmail), indiquez ici l'adresse générée par
+    // le(s) pseudo(s) admin — pas une vraie adresse e-mail.
+    // Ex. : pour le pseudo "Talco" → uToEmail("Talco") = "talco@talcoexchange.app"
+    const ADMIN_EMAILS = ["talco@talcoexchange.app", "anton@talcoexchange.app"];
+
+    /* =====================================================
+       🔑 CODE ADMIN QUOTIDIEN — création de compte
+       Même document Firestore que TalcoExchange (system/dailyAdminCode)
+       Format AAAA000000, aléatoire, change à 0h.
+       ===================================================== */
+    function itnTodayKey() {
+      const d = new Date();
+      return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    }
+    function itnGenAdminCode() {
+      const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+      let l = ''; for (let i = 0; i < 4; i++) l += letters[Math.floor(Math.random() * letters.length)];
+      let n = ''; for (let i = 0; i < 6; i++) n += Math.floor(Math.random() * 10);
+      return l + n;
+    }
+    async function getOrCreateDailyAdminCode(canCreate) {
+      if (!db) return null;
+      try {
+        const key = itnTodayKey();
+        const ref = db.collection('system').doc('dailyAdminCode');
+        const snap = await ref.get();
+        if (snap.exists && snap.data().date === key) return snap.data().code;
+        if (!canCreate) return null;
+        const code = itnGenAdminCode();
+        await ref.set({ date: key, code });
+        return code;
+      } catch (e) {
+        console.warn('Erreur code admin quotidien:', e);
+        return null;
+      }
+    }
+    async function verifyDailyAdminCode(input) {
+      if (!input || !db) return false;
+      const ref = db.collection('system').doc('dailyAdminCode');
+      try {
+        const snap = await ref.get();
+        if (!snap.exists || snap.data().date !== itnTodayKey()) return false;
+        return snap.data().code.toUpperCase() === input.trim().toUpperCase();
+      } catch (e) { console.warn('Erreur vérification code admin:', e); return false; }
+    }
+
+    document.getElementById('btnGuest').addEventListener('click', () => {
+      runAuthProgress([{ label: 'Connexion invité', duration: 600 }], () => enterApp({ name: 'Invité', guest: true }));
+    });
+    document.getElementById('btnContactAdmin').addEventListener('click', () => {
+      openAdminContactModal();
+    });
+
+    /* ---------- Barre de progression connexion / création de compte ---------- */
+    function runAuthProgress(steps, onDone) {
+      const overlay = document.getElementById('authProgressOverlay');
+      const label = document.getElementById('authProgressLabel');
+      const fill = document.getElementById('authProgressFill');
+      overlay.classList.add('show');
+      fill.style.transition = 'none';
+      fill.style.width = '0%';
+      const total = steps.reduce((s, st) => s + st.duration, 0);
+      let elapsedBefore = 0;
+      let i = 0;
+      function nextStep() {
+        if (i >= steps.length) {
+          overlay.classList.remove('show');
+          onDone();
+          return;
+        }
+        const step = steps[i];
+        label.textContent = step.label;
+        requestAnimationFrame(() => {
+          fill.style.transition = 'width ' + step.duration + 'ms linear';
+          fill.style.width = Math.round(((elapsedBefore + step.duration) / total) * 100) + '%';
+        });
+        elapsedBefore += step.duration;
+        i++;
+        setTimeout(nextStep, step.duration);
+      }
+      requestAnimationFrame(nextStep);
+    }
+
+
+    function setupLiquidMenu(nav, slider, itemSelector, onPick) {
+      let dragging = false, activeItem = null, grabOffsetX = 0;
+      function moveSliderTo(el) {
+        slider.style.opacity = '1';
+        slider.style.width = el.offsetWidth + 'px';
+        slider.style.height = el.offsetHeight + 'px';
+        slider.style.transform = `translate(${el.offsetLeft}px, ${el.offsetTop}px)`;
+      }
+      function itemAt(x, y) {
+        const el = document.elementFromPoint(x, y);
+        const item = el && el.closest(itemSelector);
+        return (item && nav.contains(item)) ? item : null;
+      }
+      function nearestItem(x) {
+        const els = [...nav.querySelectorAll(itemSelector)];
+        let best = null, bestD = Infinity;
+        els.forEach(it => {
+          const r = it.getBoundingClientRect();
+          const c = r.left + r.width / 2;
+          const d = Math.abs(c - x);
+          if (d < bestD) { bestD = d; best = it; }
+        });
+        return best;
+      }
+      nav.addEventListener('pointerdown', e => {
+        const item = e.target.closest(itemSelector); if (!item) return;
+        dragging = true; activeItem = item; slider.classList.add('dragging');
+        moveSliderTo(item);
+        const sliderRect = slider.getBoundingClientRect();
+        grabOffsetX = e.clientX - sliderRect.left;
+        try { nav.setPointerCapture(e.pointerId); } catch (err) { }
+      });
+      nav.addEventListener('pointermove', e => {
+        if (!dragging) return;
+        const navRect = nav.getBoundingClientRect();
+        const w = slider.offsetWidth, h = slider.offsetHeight;
+        let left = e.clientX - grabOffsetX - navRect.left + nav.scrollLeft;
+        const items = [...nav.querySelectorAll(itemSelector)];
+        const minLeft = items.length ? Math.min(...items.map(it => it.offsetLeft)) : 0;
+        const maxLeft = items.length ? Math.max(...items.map(it => it.offsetLeft + it.offsetWidth - w)) : (nav.scrollWidth - w);
+        left = Math.max(minLeft, Math.min(left, maxLeft));
+        const nearest = nearestItem(e.clientX);
+        const top = nearest ? nearest.offsetTop : (activeItem ? activeItem.offsetTop : 0);
+        slider.style.width = w + 'px'; slider.style.height = h + 'px';
+        slider.style.transform = `translate(${left}px, ${top}px)`;
+        if (nearest) activeItem = nearest;
+      });
+      function endDrag(e) {
+        if (!dragging) return;
+        dragging = false; slider.classList.remove('dragging');
+        const item = nearestItem(e.clientX) || itemAt(e.clientX, e.clientY) || activeItem;
+        if (item) { moveSliderTo(item); onPick(item); }
+        activeItem = null;
+      }
+      nav.addEventListener('pointerup', endDrag);
+      nav.addEventListener('pointercancel', () => { dragging = false; slider.classList.remove('dragging'); activeItem = null; });
+    }
+  </script>
+
+  <script>
+    /* ===== Raccord login -> application (hébergée à part) =====
+       APP_URL est remplacée au déploiement par le secret GitHub APP_URL. */
+    const APP_URL = "__APP_URL__";
+    function enterApp(user, opts) {
+      if (APP_URL.indexOf("__") === 0) { gateError.textContent = "URL de l'application non configurée (secret APP_URL)."; gateError.classList.add('show'); return; }
+      try {
+        if (!user.guest && user.pass) localStorage.setItem('talcoitn_session', JSON.stringify({ name: user.name, email: user.email, uid: user.uid, pass: user.pass }));
+        else if (user.guest) localStorage.setItem('talcoitn_guest_entry', String(Date.now()));
+      } catch (e) { }
+      location.href = APP_URL;
+    }
+  </script>
+</body>
+</html>
